@@ -8,15 +8,15 @@ namespace GarDataLoader.Services;
 
 public sealed class AddressObjectsDataService : IAddressObjectsDataService
 {
-  public IAddressObjects LoadFromXmlWholeObject(StringReader textReader)
-    => (AddressObjects)new XmlSerializer(typeof(AddressObjects)).Deserialize(textReader)!;
+  public IAddressObjects LoadFromXmlWholeObject(StreamReader reader)
+    => (AddressObjects)new XmlSerializer(typeof(AddressObjects)).Deserialize(reader)!;
 
-  public async Task<IAddressObjects> LoadFromXmlWholeObjectAsync(StringReader textReader)
-    => await Task.Run(() => LoadFromXmlWholeObject(textReader));
+  public async Task<IAddressObjects> LoadFromXmlWholeObjectAsync(StreamReader reader)
+    => await Task.Run(() => LoadFromXmlWholeObject(reader));
 
-  public IEnumerable<IAddressObject> LoadFromXmlAsStream(StringReader textReader)
+  public IEnumerable<IAddressObject> LoadFromXmlAsStream(StreamReader stream)
   {
-    using XmlReader xmlReader = XmlReader.Create(textReader);
+    using XmlReader xmlReader = XmlReader.Create(stream);
     xmlReader.MoveToContent();
 
     while (xmlReader.Read())
@@ -30,9 +30,9 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
     }
   }
 
-  public async IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(StringReader textReader)
+  public async IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(StreamReader stream)
   {
-    using XmlReader xmlReader = XmlReader.Create(textReader);
+    using XmlReader xmlReader = XmlReader.Create(stream);
     await xmlReader.MoveToContentAsync();
 
     while (await xmlReader.ReadAsync())
