@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\GarDataLoader\GarDataLoader.csproj" />
       <ProjectReference Include="..\GarModels\GarModels.csproj" />
     </ItemGroup>
 </Project>

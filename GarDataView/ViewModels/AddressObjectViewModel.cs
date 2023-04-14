@@ -82,7 +82,7 @@ public class AddressObjectViewModel : ViewModelBase
     }
   }
 
-  public string TypeName 
+  public string TypeName
   {
     get => model.TypeName;
     set

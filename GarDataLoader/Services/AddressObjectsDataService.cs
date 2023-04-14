@@ -32,7 +32,7 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
 
   public async IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(StreamReader stream)
   {
-    using XmlReader xmlReader = XmlReader.Create(stream);
+    using XmlReader xmlReader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
     await xmlReader.MoveToContentAsync();
 
     while (await xmlReader.ReadAsync())
@@ -41,27 +41,40 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
           && string.Equals(xmlReader.Name, "OBJECT", StringComparison.OrdinalIgnoreCase)
           && XNode.ReadFrom(xmlReader) is XElement element)
       {
-        yield return MapXmlElementToAddressObject(element);
+        AddressObject? addressObject = null;
+        try
+        {
+          addressObject = MapXmlElementToAddressObject(element);
+        }
+        catch (Exception e)
+        {
+          System.Diagnostics.Debug.WriteLine(e.Message);
+        }
+        
+        if (addressObject is not null)
+        {
+          yield return addressObject;
+        }
       }
     }
   }
   
   private AddressObject MapXmlElementToAddressObject(XElement element) => new()
   {
-    Id = (int)element.Attribute("ID")!,
-    ObjectId = (int)element.Attribute("OBJECTID")!,
-    ObjectGuid = (string)element.Attribute("OBJECTGUID")!,
-    ChangeId = (int)element.Attribute("CHANGEID")!,
-    Name = (string)element.Attribute("NAME")!,
-    TypeName = (string)element.Attribute("TYPENAME")!,
-    Level = (int)element.Attribute("LEVEL")!,
-    OperationTypeId = (int)element.Attribute("OPERTYPEID")!,
-    PrevId = (int)element.Attribute("PREVID")!,
-    NextId = (int)element.Attribute("NEXTID")!,
-    UpdateDate = DateOnly.FromDateTime((DateTime)element.Attribute("UPDATEDATE")!),
-    StartDate = DateOnly.FromDateTime((DateTime)element.Attribute("STARTDATE")!),
-    EndDate = DateOnly.FromDateTime((DateTime)element.Attribute("ENDDATE")!),
-    IsActual = (int)element.Attribute("ISACTUAL")!,
-    IsActive = (int)element.Attribute("ISACTIVE")!
+    Id = element.GetInt("ID"),
+    ObjectId = element.GetInt("OBJECTID"),
+    ObjectGuid = element.GetString("OBJECTGUID"),
+    ChangeId = element.GetInt("CHANGEID"),
+    Name = element.GetString("NAME"),
+    TypeName = element.GetString("TYPENAME"),
+    Level = element.GetInt("LEVEL"),
+    OperationTypeId = element.GetInt("OPERTYPEID"),
+    PrevId = element.GetInt("PREVID"),
+    NextId = element.GetInt("NEXTID"),
+    UpdateDate = element.GetDateOnly("UPDATEDATE"),
+    StartDate = element.GetDateOnly("STARTDATE"),
+    EndDate = element.GetDateOnly("ENDDATE"),
+    IsActual = element.GetInt("ISACTUAL"),
+    IsActive = element.GetInt("ISACTIVE")
   };
 }

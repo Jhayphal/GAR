@@ -14,7 +14,21 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
+    
+    <ScrollViewer>
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,*">
+            <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding FileName}" VerticalAlignment="Stretch"/>
+            <Button Grid.Column="1" Grid.Row="0" Content="Load" Command="{Binding LoadObjects}"/>
+            <ItemsRepeater Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Items="{Binding Objects}">
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <TextBlock Text="{Binding TypeName}"/>
+                            <TextBlock Text="{Binding Name}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </Grid>
+    </ScrollViewer>
 </Window>
