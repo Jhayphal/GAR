@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using GarDataView.Models;
-using GarModels;
 
 namespace GarDataView.ViewModels;
 
@@ -14,7 +13,15 @@ public class AddressObjectsViewModel : ViewModelBase
     this.model = model;
   }
 
-  public ObservableCollection<IAddressObject> Objects => model.Objects;
-  
-  public async Task Load(string xmlFileName) => await model.Load(xmlFileName);
+  public ObservableCollection<AddressObjectViewModel> Objects { get; } = new();
+
+  public async Task Load(string xmlFileName)
+  {
+    await model.Load(xmlFileName);
+
+    foreach (var @object in model.Objects)
+    {
+      Objects.Add(new AddressObjectViewModel(@object));
+    }
+  }
 }

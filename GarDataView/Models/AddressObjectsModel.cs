@@ -1,7 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using GarModels;
 using GarModels.Services;
 
 namespace GarDataView.Models;
@@ -9,22 +8,23 @@ namespace GarDataView.Models;
 public sealed class AddressObjectsModel
 {
   private readonly IAddressObjectsDataService service;
+  private readonly List<AddressObjectModel> objects = new();
 
   public AddressObjectsModel(IAddressObjectsDataService service)
   {
     this.service = service;
   }
 
-  public ObservableCollection<IAddressObject> Objects { get; } = new();
+  public IEnumerable<AddressObjectModel> Objects => objects;
 
   public async Task Load(string xmlFileName)
   {
-    Objects.Clear();
+    objects.Clear();
     
     using var stream = new StreamReader(xmlFileName);
-    await foreach (var @object in service.LoadFromXmlAsStreamAsync(stream))
+    await foreach (var @object in service.LoadFromXmlAsStreamAsync(stream).ConfigureAwait(false))
     {
-      Objects.Add(@object);
+      objects.Add(new AddressObjectModel(@object));
     }
   }
 }
