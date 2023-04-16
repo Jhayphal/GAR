@@ -2,11 +2,11 @@
 
 public interface IAddressObjectsDataService
 {
-  IAddressObjects LoadFromXmlWholeObject(StreamReader reader);
+  IAddressObjects LoadFromXmlWholeObject(TextReader reader);
 
-  Task<IAddressObjects> LoadFromXmlWholeObjectAsync(StreamReader reader);
+  Task<IAddressObjects> LoadFromXmlWholeObjectAsync(TextReader reader);
 
-  IEnumerable<IAddressObject> LoadFromXmlAsStream(StreamReader stream);
+  IEnumerable<IAddressObject> LoadFromXmlAsStream(TextReader stream);
 
-  IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(StreamReader stream);
+  IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(TextReader stream);
 }

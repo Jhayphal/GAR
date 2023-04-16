@@ -8,13 +8,24 @@ namespace GarDataLoader.Services;
 
 public sealed class AddressObjectsDataService : IAddressObjectsDataService
 {
-  public IAddressObjects LoadFromXmlWholeObject(StreamReader reader)
+  public IAddressObjects LoadFromXmlWholeObject(TextReader reader)
     => (AddressObjects)new XmlSerializer(typeof(AddressObjects)).Deserialize(reader)!;
 
-  public async Task<IAddressObjects> LoadFromXmlWholeObjectAsync(StreamReader reader)
+  public async Task<IAddressObjects> LoadFromXmlWholeObjectAsync(TextReader reader)
     => await Task.Run(() => LoadFromXmlWholeObject(reader));
 
-  public IEnumerable<IAddressObject> LoadFromXmlAsStream(StreamReader stream)
+  public IEnumerable<IAddressObject> LoadFromXmlAsStream(TextReader stream)
+    => LoadFromXmlAsStreamUnmapped(stream).Select(MapXmlElementToAddressObject);
+
+  public async IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(TextReader stream)
+  {
+    await foreach (var element in LoadFromXmlAsStreamUnmappedAsync(stream).ConfigureAwait(false))
+    {
+      yield return MapXmlElementToAddressObject(element);
+    }
+  }
+
+  private static IEnumerable<XElement> LoadFromXmlAsStreamUnmapped(TextReader stream)
   {
     using XmlReader xmlReader = XmlReader.Create(stream);
     xmlReader.MoveToContent();
@@ -25,12 +36,12 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
           && string.Equals(xmlReader.Name, "OBJECT", StringComparison.OrdinalIgnoreCase)
           && XNode.ReadFrom(xmlReader) is XElement element)
       {
-        yield return MapXmlElementToAddressObject(element);
+        yield return element;
       }
     }
   }
-
-  public async IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(StreamReader stream)
+  
+  private static async IAsyncEnumerable<XElement> LoadFromXmlAsStreamUnmappedAsync(TextReader stream)
   {
     using XmlReader xmlReader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
     await xmlReader.MoveToContentAsync();
@@ -41,25 +52,12 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
           && string.Equals(xmlReader.Name, "OBJECT", StringComparison.OrdinalIgnoreCase)
           && XNode.ReadFrom(xmlReader) is XElement element)
       {
-        AddressObject? addressObject = null;
-        try
-        {
-          addressObject = MapXmlElementToAddressObject(element);
-        }
-        catch (Exception e)
-        {
-          System.Diagnostics.Debug.WriteLine(e.Message);
-        }
-        
-        if (addressObject is not null)
-        {
-          yield return addressObject;
-        }
+        yield return element;
       }
     }
   }
   
-  private AddressObject MapXmlElementToAddressObject(XElement element) => new()
+  private static AddressObject MapXmlElementToAddressObject(XElement element) => new()
   {
     Id = element.GetInt("ID"),
     ObjectId = element.GetInt("OBJECTID"),
