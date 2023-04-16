@@ -1,4 +1,6 @@
-﻿namespace GarModels.Services;
+﻿using System.Data;
+
+namespace GarModels.Services;
 
 public interface IAddressObjectsDataService
 {
@@ -6,7 +8,9 @@ public interface IAddressObjectsDataService
 
   Task<IAddressObjects> LoadFromXmlWholeObjectAsync(TextReader reader);
 
-  IEnumerable<IAddressObject> LoadFromXmlAsStream(TextReader stream);
+  IEnumerable<IAddressObject> LoadFromXmlAsStream(TextReader reader);
 
-  IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(TextReader stream);
+  IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(TextReader reader);
+
+  Task InsertRecordsFromAsync(IDbConnection connection, string tableName, TextReader reader);
 }
