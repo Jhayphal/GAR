@@ -55,13 +55,13 @@ public sealed class AddressObject : IAddressObject
   public int NextId { get; set; }
 
   [XmlAttribute(AttributeName = "UPDATEDATE", Type = typeof(DateOnly))]
-  public DateOnly UpdateDate { get; set; }
+  public DateTime UpdateDate { get; set; }
 
   [XmlAttribute(AttributeName = "STARTDATE", Type = typeof(DateOnly))]
-  public DateOnly StartDate { get; set; }
+  public DateTime StartDate { get; set; }
 
   [XmlAttribute(AttributeName = "ENDDATE", Type = typeof(DateOnly))]
-  public DateOnly EndDate { get; set; }
+  public DateTime EndDate { get; set; }
 
   [XmlAttribute(AttributeName = "ISACTUAL")]
   [DefaultValue(0)]

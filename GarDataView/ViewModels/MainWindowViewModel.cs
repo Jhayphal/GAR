@@ -9,8 +9,10 @@ namespace GarDataView.ViewModels;
 public class MainWindowViewModel : ViewModelBase
 {
   private readonly AddressObjectsViewModel objectsViewModel;
-  private string fileName = @"C:\Users\Jhayphal\Downloads\93\AS_ADDR_OBJ_20230313_a9b39241-718b-4ea6-a327-e578106ce7d1.XML";
-  
+
+  private string fileName =
+    @"C:\Users\Jhayphal\Downloads\93\AS_ADDR_OBJ_20230313_a9b39241-718b-4ea6-a327-e578106ce7d1.XML";
+
   public MainWindowViewModel(IReadonlyDependencyResolver resolver)
   {
     objectsViewModel = resolver.GetService<AddressObjectsViewModel>();
@@ -21,13 +23,13 @@ public class MainWindowViewModel : ViewModelBase
 
   public string FileName
   {
-    get => fileName; 
+    get => fileName;
     set => this.RaiseAndSetIfChanged(ref fileName, value);
   }
-  
+
   public ObservableCollection<AddressObjectViewModel> Objects => objectsViewModel.Objects;
-  
+
   public ReactiveCommand<Unit, Unit> LoadObjects { get; }
 
-  private async Task Load() => await objectsViewModel.Load(FileName);
+  private async Task Load() => await objectsViewModel.Load(FileName).ConfigureAwait(false);
 }

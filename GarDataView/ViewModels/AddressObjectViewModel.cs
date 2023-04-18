@@ -152,7 +152,7 @@ public class AddressObjectViewModel : ViewModelBase
     }
   }
 
-  public DateOnly UpdateDate
+  public DateTime UpdateDate
   {
     get => model.UpdateDate;
     set
@@ -166,7 +166,7 @@ public class AddressObjectViewModel : ViewModelBase
     }
   }
 
-  public DateOnly StartDate 
+  public DateTime StartDate 
   {
     get => model.StartDate;
     set
@@ -180,7 +180,7 @@ public class AddressObjectViewModel : ViewModelBase
     }
   }
 
-  public DateOnly EndDate
+  public DateTime EndDate
   {
     get => model.EndDate;
     set

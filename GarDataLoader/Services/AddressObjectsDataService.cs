@@ -10,8 +10,6 @@ namespace GarDataLoader.Services;
 
 public sealed class AddressObjectsDataService : IAddressObjectsDataService
 {
-  public const string SqlTableName = "ADDRESS_OBJECTS";
-  
   public IAddressObjects LoadFromXmlWholeObject(TextReader reader)
     => (AddressObjects)new XmlSerializer(typeof(AddressObjects)).Deserialize(reader)!;
 
@@ -31,10 +29,10 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
 
   public async Task InsertRecordsFromAsync(IDbConnection connection, string tableName, TextReader reader)
   {
-    var hasTable = (await connection.QueryAsync<int>($"SELECT TOP 1 1 FROM sys.tables WHERE name = '{SqlTableName}'")).Any();
+    var hasTable = (await connection.QueryAsync<int>($"SELECT TOP 1 1 FROM sys.tables WHERE name = '{tableName}'")).Any();
     if (!hasTable)
     {
-      await connection.ExecuteAsync($"CREATE TABLE {SqlTableName} (" +
+      await connection.ExecuteAsync($"CREATE TABLE {tableName} (" +
                                     $"[ID] INT NOT NULL DEFAULT(0), " +
                                     $"[OBJECTID] INT NOT NULL DEFAULT(0), " +
                                     $"[OBJECTGUID] CHAR(36) NOT NULL DEFAULT(''), " +
@@ -51,18 +49,26 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
                                     $"[ISACTUAL] BIT NOT NULL DEFAULT(0), " +
                                     $"[ISACTIVE] BIT NOT NULL DEFAULT(0))");
     }
-    
-    await foreach (var element in LoadFromXmlAsStreamAsync(reader).ConfigureAwait(false))
+
+    try
     {
-      await connection.ExecuteAsync(
-        $"INSERT INTO {SqlTableName} ([ID], [OBJECTID], [OBJECTGUID], [CHANGEID], " +
-        "[NAME], [TYPENAME], [LEVEL], [OPERTYPEID], [PREVID], [NEXTID], [UPDATEDATE], " +
-        "[STARTDATE], [ENDDATE], [ISACTUAL], [ISACTIVE]) " +
-        $@"@VALUES (@{nameof(AddressObject.Id)}, @{nameof(AddressObject.ObjectId)}, @{nameof(AddressObject.ObjectGuid)}, " +
-        $@"@{nameof(AddressObject.ChangeId)}, @{nameof(AddressObject.Name)}, @{nameof(AddressObject.TypeName)}, " +
-        $@"@{nameof(AddressObject.Level)}, @{nameof(AddressObject.OperationTypeId)}, @{nameof(AddressObject.PrevId)}, " +
-        $@"@{nameof(AddressObject.NextId)}, @{nameof(AddressObject.UpdateDate)}, @{nameof(AddressObject.StartDate)}, " +
-        $@"@{nameof(AddressObject.EndDate)}, @{nameof(AddressObject.IsActual)}, @{nameof(AddressObject.IsActive)})", element);
+      await foreach (var element in LoadFromXmlAsStreamAsync(reader).ConfigureAwait(false))
+      {
+        await connection.ExecuteAsync(
+          $"INSERT INTO {tableName} ([ID], [OBJECTID], [OBJECTGUID], [CHANGEID], " +
+          "[NAME], [TYPENAME], [LEVEL], [OPERTYPEID], [PREVID], [NEXTID], [UPDATEDATE], " +
+          "[STARTDATE], [ENDDATE], [ISACTUAL], [ISACTIVE]) " +
+          $@"VALUES (@{nameof(AddressObject.Id)}, @{nameof(AddressObject.ObjectId)}, @{nameof(AddressObject.ObjectGuid)}, " +
+          $@"@{nameof(AddressObject.ChangeId)}, @{nameof(AddressObject.Name)}, @{nameof(AddressObject.TypeName)}, " +
+          $@"@{nameof(AddressObject.Level)}, @{nameof(AddressObject.OperationTypeId)}, @{nameof(AddressObject.PrevId)}, " +
+          $@"@{nameof(AddressObject.NextId)}, @{nameof(AddressObject.UpdateDate)}, @{nameof(AddressObject.StartDate)}, " +
+          $@"@{nameof(AddressObject.EndDate)}, @{nameof(AddressObject.IsActual)}, @{nameof(AddressObject.IsActive)})",
+          element);
+      }
+    }
+    catch (Exception e)
+    {
+      System.Diagnostics.Debug.WriteLine(e.Message);
     }
   }
 
@@ -110,9 +116,9 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
     OperationTypeId = element.GetInt("OPERTYPEID"),
     PrevId = element.GetInt("PREVID"),
     NextId = element.GetInt("NEXTID"),
-    UpdateDate = element.GetDateOnly("UPDATEDATE"),
-    StartDate = element.GetDateOnly("STARTDATE"),
-    EndDate = element.GetDateOnly("ENDDATE"),
+    UpdateDate = element.GetDateTime("UPDATEDATE"),
+    StartDate = element.GetDateTime("STARTDATE"),
+    EndDate = element.GetDateTime("ENDDATE"),
     IsActual = element.GetInt("ISACTUAL"),
     IsActive = element.GetInt("ISACTIVE")
   };

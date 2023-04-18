@@ -27,11 +27,11 @@ public interface IAddressObject
 
   int NextId { get; }
 
-  DateOnly UpdateDate { get; }
+  DateTime UpdateDate { get; }
 
-  DateOnly StartDate { get; }
+  DateTime StartDate { get; }
 
-  DateOnly EndDate { get; }
+  DateTime EndDate { get; }
 
   int IsActual { get; }
 
