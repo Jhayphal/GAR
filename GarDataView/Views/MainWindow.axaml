@@ -16,10 +16,11 @@
     </Design.DataContext>
     
     <ScrollViewer>
-        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,*">
-            <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding FileName}" VerticalAlignment="Stretch"/>
+        <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,*">
+            <TextBox Grid.Column="0" Grid.Row="0" Text="{Binding AddressObjectsFileName}" VerticalAlignment="Stretch"/>
             <Button Grid.Column="1" Grid.Row="0" Content="Load" Command="{Binding LoadObjects}"/>
-            <ItemsRepeater Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Items="{Binding Objects}">
+            <Button Grid.Column="2" Grid.Row="0" Content="Insert relations" Command="{Binding InsertItemRelations}"/>
+            <ItemsRepeater Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Items="{Binding Objects}">
                 <ItemsRepeater.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal" Spacing="5">

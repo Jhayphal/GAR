@@ -88,9 +88,9 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
     }
   }
   
-  private static async IAsyncEnumerable<XElement> LoadFromXmlAsStreamUnmappedAsync(TextReader stream)
+  private static async IAsyncEnumerable<XElement> LoadFromXmlAsStreamUnmappedAsync(TextReader reader)
   {
-    using XmlReader xmlReader = XmlReader.Create(stream, new XmlReaderSettings { Async = true });
+    using XmlReader xmlReader = XmlReader.Create(reader, new XmlReaderSettings { Async = true });
     await xmlReader.MoveToContentAsync();
 
     while (await xmlReader.ReadAsync())
