@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -63,7 +62,7 @@ public sealed class AddressObjectsDataService : IAddressObjectsDataService
         $@"@{nameof(AddressObject.ChangeId)}, @{nameof(AddressObject.Name)}, @{nameof(AddressObject.TypeName)}, " +
         $@"@{nameof(AddressObject.Level)}, @{nameof(AddressObject.OperationTypeId)}, @{nameof(AddressObject.PrevId)}, " +
         $@"@{nameof(AddressObject.NextId)}, @{nameof(AddressObject.UpdateDate)}, @{nameof(AddressObject.StartDate)}, " +
-        $@"@{nameof(AddressObject.EndDate)}, @{nameof(AddressObject.IsActual)}, @{nameof(AddressObject.IsActive)})");
+        $@"@{nameof(AddressObject.EndDate)}, @{nameof(AddressObject.IsActual)}, @{nameof(AddressObject.IsActive)})", element);
     }
   }
 
