@@ -50,7 +50,7 @@ public class MainWindowViewModel : ViewModelBase
       var connection = new SqlConnection(ConnectionString);
       await using var _ = connection.ConfigureAwait(false);
       await connection.OpenAsync();
-      await addressObjectsDataService.InsertRecordsFromAsync(connection, "ADDRESS_OBJECTS_TEST", stream);
+      await addressObjectsDataService.InsertRecordsFromAsync(connection, "ADDRESS_OBJECTS", stream);
     }
   }
 
@@ -74,7 +74,7 @@ public class MainWindowViewModel : ViewModelBase
       var connection = new SqlConnection(ConnectionString);
       await using var _ = connection.ConfigureAwait(false);
       await connection.OpenAsync();
-      await housesDataService.InsertRecordsFromAsync(connection, "HOUSES_TEST", stream);
+      await housesDataService.InsertRecordsFromAsync(connection, "HOUSES", stream);
     }
   }
 

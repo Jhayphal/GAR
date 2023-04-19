@@ -58,6 +58,7 @@ public sealed class AddressObjectsDataService : IGarDataService<IAddressObject>
     catch (Exception e)
     {
       System.Diagnostics.Debug.WriteLine(e.Message);
+      System.Diagnostics.Debugger.Break();
     }
   }
 

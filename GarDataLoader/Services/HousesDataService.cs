@@ -61,6 +61,7 @@ public class HousesDataService : IGarDataService<IHouse>
     catch (Exception e)
     {
       System.Diagnostics.Debug.WriteLine(e.Message);
+      System.Diagnostics.Debugger.Break();
     }
   }
   
