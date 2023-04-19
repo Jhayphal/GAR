@@ -10,16 +10,14 @@
         Title="GarDataView">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
     
     <ScrollViewer>
-        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*">
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,*" Margin="10">
             <TextBlock Text="GAR path:" VerticalAlignment="Center" Margin="5"/>
             <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding FolderPath}" VerticalAlignment="Stretch"/>
-            <WrapPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+            <WrapPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
                 <Button Content="Load address objects to DB" Command="{Binding InsertAddressObjects}"/>
                 <Button Content="Load relations to DB" Command="{Binding InsertItemRelations}"/>
             </WrapPanel>

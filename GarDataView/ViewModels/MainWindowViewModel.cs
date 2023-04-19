@@ -38,7 +38,7 @@ public class MainWindowViewModel : ViewModelBase
 
   private async Task InsertObjects()
   {
-    foreach (var file in GetFilesByMask("AS_ADM_HIERARCHY_*.XML"))
+    foreach (var file in GetFilesByMask("AS_ADDR_OBJ_2*.XML"))
     {
       using var stream = new StreamReader(file);
       var connection = new SqlConnection(ConnectionString);
