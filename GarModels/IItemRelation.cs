@@ -1,14 +1,8 @@
 ﻿namespace GarModels;
 
-public interface IItemRelation
+public interface IItemRelation : IGarObject
 {
-  int Id { get; }
-
-  int ObjectId { get; }
-
   int ParentObjectId { get; }
-
-  int ChangeId { get; }
 
   int RegionCode { get; }
 
@@ -21,18 +15,6 @@ public interface IItemRelation
   int PlanCode { get; }
 
   int StreetCode { get; }
-
-  int PrevId { get; }
-
-  int NextId { get; }
-
-  DateTime UpdateDate { get; }
-
-  DateTime StartDate { get; }
-
-  DateTime EndDate { get; }
-
-  int IsActive { get; }
-
+  
   string Path { get; }
 }

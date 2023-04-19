@@ -2,6 +2,7 @@
 using GarDataLoader.Services;
 using GarDataView.ViewModels;
 using GarDataView.Views;
+using GarModels;
 using GarModels.Services;
 using Splat;
 
@@ -13,8 +14,9 @@ public static class DependencyRegistrationExtensions
   {
     var services = Locator.CurrentMutable;
     
-    services.Register(() => new AddressObjectsDataService(), typeof(IAddressObjectsDataService));
-    services.Register(() => new ItemRelationsDataService(), typeof(IItemRelationsDataService));
+    services.Register(() => new AddressObjectsDataService(), typeof(IGarDataService<IAddressObject>));
+    services.Register(() => new ItemRelationsDataService(), typeof(IGarDataService<IItemRelation>));
+    services.Register(() => new HousesDataService(), typeof(IGarDataService<IHouse>));
     services.Register(() => new MainWindowViewModel(), typeof(MainWindowViewModel));
     services.Register(() => new MainWindow { DataContext = Locator.Current.GetService<MainWindowViewModel>() }, typeof(MainWindow));
     

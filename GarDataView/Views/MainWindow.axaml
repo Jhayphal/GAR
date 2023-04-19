@@ -3,9 +3,10 @@
         xmlns:vm="using:GarDataView.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
         x:Class="GarDataView.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        Width="600" Height="400"
         Icon="/Assets/avalonia-logo.ico"
         Title="GarDataView">
 
@@ -20,6 +21,7 @@
             <WrapPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="5">
                 <Button Content="Load address objects to DB" Command="{Binding InsertAddressObjects}"/>
                 <Button Content="Load relations to DB" Command="{Binding InsertItemRelations}"/>
+                <Button Content="Load houses to DB" Command="{Binding InsertHouseObjects}"/>
             </WrapPanel>
         </Grid>
     </ScrollViewer>

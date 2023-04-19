@@ -1,12 +1,28 @@
-﻿using System.ComponentModel;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using GarModels;
 
 namespace GarDataLoader;
 
-[XmlRoot(ElementName = "OBJECT")]
-public sealed class AddressObject : IAddressObject
+[XmlRoot(ElementName = "HOUSE")]
+public struct House : IHouse
 {
+  public House()
+  {
+    Id = 0;
+    ObjectId = 0;
+    ChangeId = 0;
+    HouseNumber = string.Empty;
+    HouseType = 0;
+    OperationTypeId = 0;
+    PrevId = 0;
+    NextId = 0;
+    UpdateDate = default;
+    StartDate = default;
+    EndDate = default;
+    IsActual = 0;
+    IsActive = 0;
+  }
+
   [XmlAttribute(AttributeName = "ID")]
   public int Id { get; set; }
 
@@ -19,17 +35,13 @@ public sealed class AddressObject : IAddressObject
   [XmlAttribute(AttributeName = "CHANGEID")]
   public int ChangeId { get; set; }
 
-  [XmlAttribute(AttributeName = "NAME")]
-  public string Name { get; set; } = string.Empty;
+  [XmlAttribute(AttributeName = "HOUSENUM")]
+  public string HouseNumber { get; set; }
 
-  [XmlAttribute(AttributeName = "TYPENAME")]
-  public string TypeName { get; set; } = string.Empty;
-
-  [XmlAttribute(AttributeName = "LEVEL")]
-  public int Level { get; set; }
+  [XmlAttribute(AttributeName = "HOUSETYPE")]
+  public int HouseType { get; set; }
 
   [XmlAttribute(AttributeName = "OPERTYPEID")]
-  [DefaultValue(0)]
   public int OperationTypeId { get; set; }
 
   [XmlAttribute(AttributeName = "PREVID")]
@@ -38,13 +50,13 @@ public sealed class AddressObject : IAddressObject
   [XmlAttribute(AttributeName = "NEXTID")]
   public int NextId { get; set; }
 
-  [XmlAttribute(AttributeName = "UPDATEDATE", Type = typeof(DateOnly))]
+  [XmlAttribute(AttributeName = "UPDATEDATE")]
   public DateTime UpdateDate { get; set; }
 
-  [XmlAttribute(AttributeName = "STARTDATE", Type = typeof(DateOnly))]
+  [XmlAttribute(AttributeName = "STARTDATE")]
   public DateTime StartDate { get; set; }
 
-  [XmlAttribute(AttributeName = "ENDDATE", Type = typeof(DateOnly))]
+  [XmlAttribute(AttributeName = "ENDDATE")]
   public DateTime EndDate { get; set; }
 
   [XmlAttribute(AttributeName = "ISACTUAL")]

@@ -7,7 +7,7 @@ using GarModels.Services;
 
 namespace GarDataLoader.Services;
 
-public class ItemRelationsDataService : IItemRelationsDataService
+public class ItemRelationsDataService : IGarDataService<IItemRelation>
 {
   public async IAsyncEnumerable<IItemRelation> LoadFromXmlAsStreamAsync(TextReader reader)
   {
@@ -50,12 +50,12 @@ public class ItemRelationsDataService : IItemRelationsDataService
           $"INSERT INTO {tableName} ([ID], [OBJECTID], [PARENTOBJID], [CHANGEID], " +
           "[REGIONCODE], [AREACODE], [CITYCODE], [PLACECODE], [PLANCODE], [STREETCODE], " +
           "[PREVID], [NEXTID], [UPDATEDATE], [STARTDATE], [ENDDATE], [ISACTIVE], [PATH]) " +
-          $@"VALUES (@{nameof(ItemRelation.Id)}, @{nameof(ItemRelation.ObjectId)}, @{nameof(ItemRelation.ParentObjectId)}, " +
-          $@"@{nameof(ItemRelation.ChangeId)}, @{nameof(ItemRelation.RegionCode)}, @{nameof(ItemRelation.AreaCode)}, " +
-          $@"@{nameof(ItemRelation.CityCode)}, @{nameof(ItemRelation.PlaceCode)}, @{nameof(ItemRelation.PlanCode)}, " +
-          $@"@{nameof(ItemRelation.StreetCode)}, @{nameof(ItemRelation.PrevId)}, @{nameof(ItemRelation.NextId)}, " +
-          $@"@{nameof(ItemRelation.UpdateDate)}, @{nameof(ItemRelation.StartDate)}, @{nameof(ItemRelation.EndDate)}, " +
-          $@"@{nameof(ItemRelation.IsActive)}, @{nameof(ItemRelation.Path)})", element);
+          $@"VALUES (@{nameof(element.Id)}, @{nameof(element.ObjectId)}, @{nameof(element.ParentObjectId)}, " +
+          $@"@{nameof(element.ChangeId)}, @{nameof(element.RegionCode)}, @{nameof(element.AreaCode)}, " +
+          $@"@{nameof(element.CityCode)}, @{nameof(element.PlaceCode)}, @{nameof(element.PlanCode)}, " +
+          $@"@{nameof(element.StreetCode)}, @{nameof(element.PrevId)}, @{nameof(element.NextId)}, " +
+          $@"@{nameof(element.UpdateDate)}, @{nameof(element.StartDate)}, @{nameof(element.EndDate)}, " +
+          $@"@{nameof(element.IsActive)}, @{nameof(element.Path)})", element);
       }
     }
     catch (Exception e)

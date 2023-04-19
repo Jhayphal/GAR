@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Reactive;
 using System.IO;
+using GarModels;
 using Microsoft.Data.SqlClient;
 using GarModels.Services;
 using ReactiveUI;
@@ -14,16 +15,19 @@ public class MainWindowViewModel : ViewModelBase
 {
   private const string ConnectionString = @"Data Source=NJNOUTE;Database=Empty;User ID=sa;Password=123456;TrustServerCertificate=True";
   
-  private readonly IAddressObjectsDataService service = Locator.Current.GetService<IAddressObjectsDataService>();
-  private readonly IItemRelationsDataService itemRelationsDataService = Locator.Current.GetService<IItemRelationsDataService>();
+  private readonly IGarDataService<IAddressObject> addressObjectsDataService = Locator.Current.GetService<IGarDataService<IAddressObject>>();
+  private readonly IGarDataService<IItemRelation> itemRelationsDataService = Locator.Current.GetService<IGarDataService<IItemRelation>>();
+  private readonly IGarDataService<IHouse> housesDataService = Locator.Current.GetService<IGarDataService<IHouse>>();
 
   private string folderPath = @"C:\Users\Jhayphal\Downloads\93";
 
   public MainWindowViewModel()
   {
     var canExecute = this.WhenAnyValue(x => x.FolderPath, s => !string.IsNullOrWhiteSpace(s) && Directory.Exists(s));
+
     InsertAddressObjects = ReactiveCommand.CreateFromTask(InsertObjects, canExecute);
     InsertItemRelations = ReactiveCommand.CreateFromTask(InsertRelations, canExecute);
+    InsertHouseObjects = ReactiveCommand.CreateFromTask(InsertHouses, canExecute);
   }
 
   public string FolderPath
@@ -35,6 +39,8 @@ public class MainWindowViewModel : ViewModelBase
   public ReactiveCommand<Unit, Unit> InsertAddressObjects { get; }
   
   public ReactiveCommand<Unit, Unit> InsertItemRelations { get; }
+  
+  public ReactiveCommand<Unit, Unit> InsertHouseObjects { get; }
 
   private async Task InsertObjects()
   {
@@ -44,7 +50,7 @@ public class MainWindowViewModel : ViewModelBase
       var connection = new SqlConnection(ConnectionString);
       await using var _ = connection.ConfigureAwait(false);
       await connection.OpenAsync();
-      await service.InsertRecordsFromAsync(connection, "ADDRESS_OBJECTS_TEST", stream);
+      await addressObjectsDataService.InsertRecordsFromAsync(connection, "ADDRESS_OBJECTS_TEST", stream);
     }
   }
 
@@ -59,6 +65,18 @@ public class MainWindowViewModel : ViewModelBase
       await itemRelationsDataService.InsertRecordsFromAsync(connection, "ADM_HIERARCHY", stream);
     }
   }
+  
+  private async Task InsertHouses()
+  {
+    foreach (var file in GetFilesByMask("AS_HOUSES_2*.XML"))
+    {
+      using var stream = new StreamReader(file);
+      var connection = new SqlConnection(ConnectionString);
+      await using var _ = connection.ConfigureAwait(false);
+      await connection.OpenAsync();
+      await housesDataService.InsertRecordsFromAsync(connection, "HOUSES_TEST", stream);
+    }
+  }
 
-  private IEnumerable<string> GetFilesByMask(string mask) => Directory.GetFiles(FolderPath, Path.Combine(FolderPath, mask), SearchOption.AllDirectories);
+  private IEnumerable<string> GetFilesByMask(string mask) => Directory.GetFiles(FolderPath, mask, SearchOption.AllDirectories);
 }

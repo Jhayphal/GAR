@@ -2,9 +2,9 @@
 
 namespace GarModels.Services;
 
-public interface IItemRelationsDataService
+public interface IGarDataService<out TObject> where TObject : IGarObject
 {
-  IAsyncEnumerable<IItemRelation> LoadFromXmlAsStreamAsync(TextReader reader);
+  IAsyncEnumerable<TObject> LoadFromXmlAsStreamAsync(TextReader reader);
 
   Task InsertRecordsFromAsync(IDbConnection connection, string tableName, TextReader reader);
 }
