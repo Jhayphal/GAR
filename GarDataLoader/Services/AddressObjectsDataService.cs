@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using GarModels;
 using GarModels.Services;
 using Dapper;
@@ -10,15 +9,6 @@ namespace GarDataLoader.Services;
 
 public sealed class AddressObjectsDataService : IAddressObjectsDataService
 {
-  public IAddressObjects LoadFromXmlWholeObject(TextReader reader)
-    => (AddressObjects)new XmlSerializer(typeof(AddressObjects)).Deserialize(reader)!;
-
-  public async Task<IAddressObjects> LoadFromXmlWholeObjectAsync(TextReader reader)
-    => await Task.Run(() => LoadFromXmlWholeObject(reader));
-
-  public IEnumerable<IAddressObject> LoadFromXmlAsStream(TextReader reader)
-    => LoadFromXmlAsStreamUnmapped(reader).Select(MapXmlElementToAddressObject);
-
   public async IAsyncEnumerable<IAddressObject> LoadFromXmlAsStreamAsync(TextReader reader)
   {
     await foreach (var element in LoadFromXmlAsStreamUnmappedAsync(reader).ConfigureAwait(false))

@@ -15,7 +15,6 @@ public static class DependencyRegistrationExtensions
     
     services.Register(() => new AddressObjectsDataService(), typeof(IAddressObjectsDataService));
     services.Register(() => new ItemRelationsDataService(), typeof(IItemRelationsDataService));
-    services.Register(() => new AddressObjectsViewModel(), typeof(AddressObjectsViewModel));
     services.Register(() => new MainWindowViewModel(), typeof(MainWindowViewModel));
     services.Register(() => new MainWindow { DataContext = Locator.Current.GetService<MainWindowViewModel>() }, typeof(MainWindow));
     

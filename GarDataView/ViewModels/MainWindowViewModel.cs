@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.IO;
-using System.Reactive;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using GarModels.Services;
+using System.Reactive;
+using System.IO;
 using Microsoft.Data.SqlClient;
+using GarModels.Services;
 using ReactiveUI;
 using Splat;
 
@@ -11,43 +12,53 @@ namespace GarDataView.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-  private readonly AddressObjectsViewModel objectsViewModel = Locator.Current.GetService<AddressObjectsViewModel>();
+  private const string ConnectionString = @"Data Source=NJNOUTE;Database=Empty;User ID=sa;Password=123456;TrustServerCertificate=True";
+  
+  private readonly IAddressObjectsDataService service = Locator.Current.GetService<IAddressObjectsDataService>();
   private readonly IItemRelationsDataService itemRelationsDataService = Locator.Current.GetService<IItemRelationsDataService>();
 
-  private string addrObjFileName =
-    @"C:\Users\Jhayphal\Downloads\93\AS_ADDR_OBJ_20230313_a9b39241-718b-4ea6-a327-e578106ce7d1.XML";
-  private string admHierarchyFileName =
-    @"C:\Users\Jhayphal\Downloads\93\AS_ADM_HIERARCHY_20230313_81ae6605-1391-4525-98f8-b68e96f35160.XML";
+  private string folderPath = @"C:\Users\Jhayphal\Downloads\93";
 
   public MainWindowViewModel()
   {
-    var canExecute = this.WhenAnyValue(x => x.AddressObjectsFileName, x => !string.IsNullOrWhiteSpace(x));
-    LoadObjects = ReactiveCommand.CreateFromTask(Load, canExecute);
-    InsertItemRelations = ReactiveCommand.CreateFromTask(InsertRelations);
+    var canExecute = this.WhenAnyValue(x => x.FolderPath, s => !string.IsNullOrWhiteSpace(s) && Directory.Exists(s));
+    InsertAddressObjects = ReactiveCommand.CreateFromTask(InsertObjects, canExecute);
+    InsertItemRelations = ReactiveCommand.CreateFromTask(InsertRelations, canExecute);
   }
 
-  public string AddressObjectsFileName
+  public string FolderPath
   {
-    get => addrObjFileName;
-    set => this.RaiseAndSetIfChanged(ref addrObjFileName, value);
+    get => folderPath;
+    set => this.RaiseAndSetIfChanged(ref folderPath, value);
   }
 
-  public ObservableCollection<AddressObjectViewModel> Objects => objectsViewModel.Objects;
-
-  public ReactiveCommand<Unit, Unit> LoadObjects { get; }
+  public ReactiveCommand<Unit, Unit> InsertAddressObjects { get; }
   
   public ReactiveCommand<Unit, Unit> InsertItemRelations { get; }
 
-  private async Task Load() => await objectsViewModel.Load(AddressObjectsFileName).ConfigureAwait(false);
-  
+  private async Task InsertObjects()
+  {
+    foreach (var file in GetFilesByMask("AS_ADM_HIERARCHY_*.XML"))
+    {
+      using var stream = new StreamReader(file);
+      var connection = new SqlConnection(ConnectionString);
+      await using var _ = connection.ConfigureAwait(false);
+      await connection.OpenAsync();
+      await service.InsertRecordsFromAsync(connection, "ADDRESS_OBJECTS_TEST", stream);
+    }
+  }
+
   private async Task InsertRelations()
   {
-    using var stream = new StreamReader(admHierarchyFileName);
-
-    var connection = new SqlConnection(@"Data Source=NJNOUTE;Database=Empty;User ID=sa;Password=123456;TrustServerCertificate=True");
-    await using var _ = connection.ConfigureAwait(false);
-    await connection.OpenAsync();
-
-    await itemRelationsDataService.InsertRecordsFromAsync(connection, "ADM_HIERARCHY_TEST", stream);
+    foreach (var file in GetFilesByMask("AS_ADM_HIERARCHY_*.XML"))
+    {
+      using var stream = new StreamReader(file);
+      var connection = new SqlConnection(ConnectionString);
+      await using var _ = connection.ConfigureAwait(false);
+      await connection.OpenAsync();
+      await itemRelationsDataService.InsertRecordsFromAsync(connection, "ADM_HIERARCHY", stream);
+    }
   }
+
+  private IEnumerable<string> GetFilesByMask(string mask) => Directory.GetFiles(FolderPath, Path.Combine(FolderPath, mask), SearchOption.AllDirectories);
 }
