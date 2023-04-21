@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Reactive;
 using System.IO;
 using GarDataLoader.Services;
@@ -21,7 +19,7 @@ public class MainWindowViewModel : ViewModelBase
   private string archivePath = @"C:\Users\Jhayphal\Downloads\gar_xml.zip";
 
   private string connectionString =
-    @"Data Source=NJNOUTE;Database=Empty;User ID=sa;Password=123456;TrustServerCertificate=True";
+    @"Data Source=NJNOUTE;Database=Empty;User ID=sa;Password=******;TrustServerCertificate=True";
 
   public MainWindowViewModel()
   {
@@ -56,40 +54,25 @@ public class MainWindowViewModel : ViewModelBase
   public ReactiveCommand<Unit, Unit> InsertHouseObjects { get; }
 
   private async Task InsertObjects()
-  {
-    foreach (var stream in ZipWalkerService.GetFiles(ArchivePath, "/AS_ADDR_OBJ_2"))
-    {
-      await using var _ = stream.ConfigureAwait(false);
-      using var reader = new StreamReader(stream);
-      var connection = new SqlConnection(ConnectionString);
-      await using var __ = connection.ConfigureAwait(false);
-      await connection.OpenAsync();
-      await addressObjectsDataService.InsertRecordsFromAsync(connection, "ADDRESS_OBJECTS", reader);
-    }
-  }
+    => await LoadData(fileMask: "/AS_ADDR_OBJ_2", service: addressObjectsDataService, tableName: "ADDRESS_OBJECTS").ConfigureAwait(false);
 
   private async Task InsertRelations()
+    => await LoadData(fileMask: "/AS_ADM_HIERARCHY_", service: itemRelationsDataService, tableName: "ADM_HIERARCHY").ConfigureAwait(false);
+
+  private async Task InsertHouses()
+    => await LoadData(fileMask: "/AS_HOUSES_2", service: housesDataService, tableName: "HOUSES").ConfigureAwait(false);
+
+  private async Task LoadData<TObject>(string fileMask, IGarDataService<TObject> service, string tableName)
+    where TObject : IGarObject
   {
-    foreach (var stream in ZipWalkerService.GetFiles(ArchivePath, "/AS_ADM_HIERARCHY_"))
+    foreach (var stream in ZipWalkerService.GetFiles(ArchivePath, fileMask))
     {
       await using var _ = stream.ConfigureAwait(false);
       using var reader = new StreamReader(stream);
       var connection = new SqlConnection(ConnectionString);
       await using var __ = connection.ConfigureAwait(false);
       await connection.OpenAsync();
-      await itemRelationsDataService.InsertRecordsFromAsync(connection, "ADM_HIERARCHY", reader);
-    }
-  }
-  
-  private async Task InsertHouses()
-  {
-    foreach (var stream in ZipWalkerService.GetFiles(ArchivePath, "/AS_HOUSES_2"))
-    {
-      using var reader = new StreamReader(stream);
-      var connection = new SqlConnection(ConnectionString);
-      await using var __ = connection.ConfigureAwait(false);
-      await connection.OpenAsync();
-      await housesDataService.InsertRecordsFromAsync(connection, "HOUSES", reader);
+      await service.InsertRecordsFromAsync(connection, tableName, reader);
     }
   }
 }
